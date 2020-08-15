@@ -1,0 +1,386 @@
+#####Boundary element model#####
+action particle_type[]:input_BEM_sphere(radius=1,discretization_level=3,mother="octahedron|icosahedron") : \begin
+import MMesh5
+vertex,face=MMesh5.sphere(radius,discretization_level,mother)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","sphere"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Discretization_level","%d"%(discretization_level)]
+$self.additional_information[3]=["Mother",mother]
+\end
+
+action particle_type[]:input_BEM_ellipsoid(a=1,b=2,c=3,discretization_level=3,mother="octahedron|icosahedron") : \begin
+import MMesh5
+vertex,face=MMesh5.ellipsoid(a,b,c,discretization_level,mother)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","ellipsoid"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["C","%f"%(c)]
+$self.additional_information[4]=["Discretization_level","%d"%(discretization_level)]
+$self.additional_information[5]=["Mother",mother]
+\end
+
+action particle_type[]:input_BEM_biconcave(a=1.4,c1=0.2,c2=2,c3=-1.1,discretization_level=3,mother="octahedron|icosahedron") : \begin
+import MMesh5
+vertex,face=MMesh5.biconcave(a,c1,c2,c3,discretization_level,mother)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","biconcave"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["C1","%f"%(c1)]
+$self.additional_information[3]=["C2","%f"%(c2)]
+$self.additional_information[4]=["C3","%f"%(c3)]
+$self.additional_information[5]=["Discretization_level","%d"%(discretization_level)]
+$self.additional_information[6]=["Mother",mother]
+\end
+
+action particle_type[]:input_BEM_rect3d(a=1,b=2,c=3,discretization_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.rect3d(a,b,c,discretization_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","rect3d"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["C","%f"%(c)]
+$self.additional_information[4]=["Discretization_level","%d"%(discretization_level)]
+\end
+
+action particle_type[]:input_BEM_twist_ribbon(a=1,b=1,length=10,nx=3,nz=100,chirality=1) : \begin
+import MMesh5
+vertex,face=MMesh5.twist_ribbon(a,b,length,nx,nz,chirality)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","twist_ribbon"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["Length","%f"%(length)]
+$self.additional_information[4]=["Nx","%d"%(nx)]
+$self.additional_information[5]=["Nz","%d"%(nz)]
+$self.additional_information[6]=["Chirality","%d"%(chirality)]
+\end
+
+action particle_type[]:input_BEM_disk(radius=2,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.disk(radius,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","disk"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_rect2d(a=2,b=3,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.rect2d(a,b,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","rect2d"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_ellipse(a=2,b=3,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.ellipse(a,b,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","ellipse"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_hemisphere_without_bottom(radius=2,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.hemisphere_without_bottom(radius,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","hemisphere_without_bottom"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_hemisphere_with_bottom(radius=2,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.hemisphere_with_bottom(radius,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","hemisphere_with_bottom"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_hemiellipsoid_without_bottom(a=1,b=2,c=3,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.hemi_ellipsoid_without_bottom(a,b,c,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","hemiellipsoid_without_bottom"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["C","%f"%(c)]
+$self.additional_information[4]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_hemiellipsoid_with_bottom(a=1,b=2,c=3,discretizetion_level=3) : \begin
+import MMesh5
+vertex,face=MMesh5.hemi_ellipsoid_with_bottom(a,b,c,discretizetion_level)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","hemiellipsoid_without_bottom"]
+$self.additional_information[1]=["A","%f"%(a)]
+$self.additional_information[2]=["B","%f"%(b)]
+$self.additional_information[3]=["C","%f"%(c)]
+$self.additional_information[4]=["Discretizetion_level","%d"%(discretizetion_level)]
+\end
+
+action particle_type[]:input_BEM_cylinder(radius=1,half_length=10,n_theta=20,n_height=20) : \begin
+import MMesh5
+vertex,face=MMesh5.cylinder(radius,half_length,n_theta,n_height)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","cylinder"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Half_length","%f"%(half_length)]
+$self.additional_information[3]=["N_theta","%d"%(n_theta)]
+$self.additional_information[4]=["N_height","%d"%(n_height)]
+\end
+
+action particle_type[]:input_BEM_cylinder_with_caps(radius=1,half_length=5,cap_discretizetion_level=2,n_height=10): \begin
+import MMesh5
+vertex,face=MMesh5.cylinder_with_caps(radius,half_length,cap_discretizetion_level,n_height)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","cylinder_with_caps"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Half_length","%f"%(half_length)]
+$self.additional_information[3]=["Cap_discretizetion_level","%d"%(cap_discretizetion_level)]
+$self.additional_information[4]=["N_height","%d"%(n_height)]
+\end
+
+action particle_type[]:input_BEM_torus(small_radius=1,large_radius=3,n_theta=10,n_circumference=10): \begin
+import MMesh5
+vertex,face=MMesh5.torus(small_radius,large_radius,n_theta,n_circumference)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","torus"]
+$self.additional_information[1]=["Small_radius","%f"%(small_radius)]
+$self.additional_information[2]=["Large_radius","%f"%(large_radius)]
+$self.additional_information[3]=["N_theta","%d"%(n_theta)]
+$self.additional_information[4]=["N_circumference","%d"%(n_circumference)]
+\end
+
+action particle_type[]:input_BEM_troidal_twist_ribbon(width=1,large_radius=3,twist_number=1,n_width=5,n_circumference=50): \begin
+import MMesh5
+vertex,face=MMesh5.troidal_twist_ribbon(width,large_radius,twist_number,n_width,n_circumference)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","troidal_twist_ribbon"]
+$self.additional_information[1]=["Width","%f"%(width)]
+$self.additional_information[2]=["Large_radius","%f"%(large_radius)]
+$self.additional_information[3]=["Twist_number","%f"%(twist_number)]
+$self.additional_information[4]=["N_width","%d"%(n_width)]
+$self.additional_information[5]=["N_circumference","%d"%(n_circumference)]
+\end
+
+action particle_type[]:input_BEM_helix(helix_a=3.0,helix_b=1.0,radius=1.0,half_length=5.0,n_theta=10,n_height=50,chirality=1): \begin
+import MMesh5
+vertex,face=MMesh5.helix(helix_a,helix_b,radius,half_length,n_theta,n_height,chirality)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","helix"]
+$self.additional_information[1]=["A","%f"%(helix_a)]
+$self.additional_information[2]=["B","%f"%(helix_b)]
+$self.additional_information[3]=["Radius","%f"%(radius)]
+$self.additional_information[4]=["Half_length","%f"%(half_length)]
+$self.additional_information[5]=["N_theta","%d"%(n_theta)]
+$self.additional_information[6]=["N_height","%d"%(n_height)]
+$self.additional_information[7]=["Chirality","%d"%(chirality)]
+\end
+
+action particle_type[]:input_BEM_helix_with_caps(helix_a=3.0,helix_b=1.0,radius=1.0,half_length=5.0,cap_discretizetion_level=2,n_height=50,chirality=1): \begin
+import MMesh5
+vertex,face=MMesh5.helix_with_caps(helix_a,helix_b,radius,half_length,cap_discretizetion_level,n_height,chirality)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","helix"]
+$self.additional_information[1]=["A","%f"%(helix_a)]
+$self.additional_information[2]=["B","%f"%(helix_b)]
+$self.additional_information[3]=["Radius","%f"%(radius)]
+$self.additional_information[4]=["Half_length","%f"%(half_length)]
+$self.additional_information[5]=["Cap_discretizetion_level","%d"%(cap_discretizetion_level)]
+$self.additional_information[6]=["N_height","%d"%(n_height)]
+$self.additional_information[7]=["Chirality","%d"%(chirality)]
+\end
+
+action particle_type[]:input_BEM_slightly_deformed_sphere(radius=1.0,discretizetion_level=3,beta=0.2,monopole=1.0,dipole="[1.0,0.0,0.0]",quadrupole="[[2.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,-1.0]]",mother="octahedron|icosahedron"): \begin
+import MMesh5
+vertex,face=MMesh5.slightlyDeformedSphere(radius,discretizetion_level,beta,monopole,eval(dipole),eval(quadrupole),mother)
+$self.model.model_type="BEM"
+$self.model.BEM.vertex[],$self.model.BEM.face[]=[],[]
+$self.color[]=[]
+for i in range(len(vertex)):
+	$self.model.BEM.vertex[i].id=i
+	$self.model.BEM.vertex[i].position=vertex[i].tolist()
+for i in range(len(face)):
+	$self.model.BEM.face[i].id=i
+	$self.model.BEM.face[i].vertex[]=face[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","slightly_deformed_Sphere"]
+$self.additional_information[1]=["Radius","%f"%(radius)]
+$self.additional_information[2]=["Discretizetion_level","%d"%(discretizetion_level)]
+$self.additional_information[3]=["Beta","%f"%(beta)]
+$self.additional_information[4]=["Monopole","%f"%(monopole)]
+$self.additional_information[5]=["Dipole",dipole]
+$self.additional_information[6]=["Quadrupole",quadrupole]
+$self.additional_information[7]=["Mother",mother]
+\end

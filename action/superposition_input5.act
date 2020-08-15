@@ -1,0 +1,138 @@
+#####Superposition model#####
+action particle_type[]:input_sup_sphere(Radius=1): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.sphere(Radius)
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].sphere.radius=e[0][2][0]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","sphere"]
+$self.additional_information[1]=["radius","Radius"]
+\end
+
+action particle_type[]:input_sup_prolate_spheroid(Director="[1,0,0]",LongAxis=5,ShortAxis=1): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.prolate_spheroid(eval(Director),LongAxis,ShortAxis)
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].prolate_spheroid.director=e[0][2][0]
+$self.model.superposition.element[0].prolate_spheroid.long_axis=e[0][2][1]
+$self.model.superposition.element[0].prolate_spheroid.short_axis=e[0][2][2]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","prolate_spheroid"]
+$self.additional_information[1]=["director",Director]
+$self.additional_information[2]=["longAxis","LongAxis"]
+$self.additional_information[3]=["shortAxis","ShortAxis"]
+\end
+
+action particle_type[]:input_sup_oblate_spheroid(Director="[1,0,0]",LongAxis=5,ShortAxis=1): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.oblate_spheroid(eval(Director),LongAxis,ShortAxis)
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].oblate_spheroid.director=e[0][2][0]
+$self.model.superposition.element[0].oblate_spheroid.long_axis=e[0][2][1]
+$self.model.superposition.element[0].oblate_spheroid.short_axis=e[0][2][2]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","oblate_spheroid"]
+$self.additional_information[1]=["director",Director]
+$self.additional_information[2]=["longAxis","LongAxis"]
+$self.additional_information[3]=["shortAxis","ShortAxis"]
+\end
+
+action particle_type[]:input_sup_disk(Director="[1,0,0]",Radius=1): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.disk(eval(Director),Radius)
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].disk.director=e[0][2][0]
+$self.model.superposition.element[0].disk.radius=e[0][2][1]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","disk"]
+$self.additional_information[1]=["director",Director]
+$self.additional_information[2]=["radius","Radius"]
+\end
+
+action particle_type[]:input_sup_needle(Director="[1,0,0]",LongAxis=10,ShortAxis=1): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.needle(eval(Director),LongAxis,ShortAxis)
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].needle.director=e[0][2][0]
+$self.model.superposition.element[0].needle.long_axis=e[0][2][1]
+$self.model.superposition.element[0].needle.short_axis=e[0][2][2]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","needle"]
+$self.additional_information[1]=["director",Director]
+$self.additional_information[2]=["longAxis","LongAxis"]
+$self.additional_information[3]=["shortAxis","ShortAxis"]
+\end
+
+action particle_type[]:input_sup_dumbbell(Radius0=1,Radius1=2,HalfLength=3): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.dumbbell(Radius0,Radius1,HalfLength)
+#sphere0
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].sphere.radius=e[0][2][0]
+#sphere1
+$self.model.superposition.element[1].position=e[1][0]
+$self.model.superposition.element[1].element=e[1][1]
+$self.model.superposition.element[1].sphere.radius=e[1][2][0]
+#line
+$self.model.superposition.element[2].position=e[2][0]
+$self.model.superposition.element[2].element=e[2][1]
+$self.model.superposition.element[2].line.director=e[2][2][0]
+$self.model.superposition.element[2].line.half_length=e[2][2][1]
+$self.color[0]=[1.0,0.0,0.0,1.0]
+$self.color[1]=[0.0,0.0,1.0,1.0]
+$self.color[2]=[0.0,0.0,0.0,1.0]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","dumbbell"]
+$self.additional_information[1]=["radius0","Radius0"]
+$self.additional_information[2]=["radius1","Radius1"]
+$self.additional_information[3]=["halfLength","HalfLength"]
+\end
+
+action particle_type[]:input_sup_propeller(Radius0=1,Radius1=2,TwistAngle=90,HalfLength=3): \begin
+import MSuperposition5
+$self.model.model_type="superposition"
+$self.model.superposition.element[]=[]
+e=MSuperposition5.propeller(Radius0,Radius1,TwistAngle,HalfLength)
+#disk0
+$self.model.superposition.element[0].position=e[0][0]
+$self.model.superposition.element[0].element=e[0][1]
+$self.model.superposition.element[0].disk.director=e[0][2][0]
+$self.model.superposition.element[0].disk.radius=e[0][2][1]
+#disk1
+$self.model.superposition.element[1].position=e[1][0]
+$self.model.superposition.element[1].element=e[1][1]
+$self.model.superposition.element[1].disk.director=e[1][2][0]
+$self.model.superposition.element[1].disk.radius=e[1][2][1]
+#line
+$self.model.superposition.element[2].position=e[2][0]
+$self.model.superposition.element[2].element=e[2][1]
+$self.model.superposition.element[2].line.director=e[2][2][0]
+$self.model.superposition.element[2].line.half_length=e[2][2][1]
+$self.color[0]=[1.0,0.0,0.0,1.0]
+$self.color[1]=[0.0,0.0,1.0,1.0]
+$self.color[2]=[0.0,0.0,0.0,1.0]
+$self.additional_information[]=[]
+$self.additional_information[0]=["name","propeller"]
+$self.additional_information[1]=["radius0","Radius0"]
+$self.additional_information[2]=["radius1","Radius1"]
+$self.additional_information[3]=["twistAngle","TwistAngle"]
+$self.additional_information[4]=["halfLength","HalfLength"]
+\end

@@ -1,0 +1,361 @@
+action particle_type[]:show() : \begin
+from MShow5 import *
+model=_udf_.get("self"+".model.model_type")
+############# BEADS ##########################
+if model=="beads":
+	pos=_udf_.get("self"+".model.beads.bead[].position")
+	attr=_udf_.get("self"+".color[]")
+	if len(attr)==0:
+		draw_beads_model_concolor(_udf_,[0.0,0.0,0.0],[0,0,0,1],pos,[1.0,0.0,0.0,1.0])
+	elif len(attr)==1:
+		draw_beads_model_concolor(_udf_,[0.0,0.0,0.0],[0,0,0,1],pos,attr[0])
+	else:
+		if len(pos)!=len(attr):
+			print("Numbers of bead[] and color[] are different!")
+		else:
+			draw_beads_model_each_color(_udf_,[0.0,0.0,0.0],[0,0,0,1],pos,attr)
+################# SUPERPOSITION ################
+elif model=="superposition":
+	element=_udf_.get("self"+".model.superposition.element[]")
+	color=_udf_.get("self"+".color[]")
+	draw_superposition_model(_udf_,[0.0,0.0,0.0],[0,0,0,1],element,color)
+################ BEM #########################
+elif model=="BEM":
+	vertex=_udf_.get("self"+".model.BEM.vertex[]")
+	face=_udf_.get("self"+".model.BEM.face[].vertex[]")
+	v={}
+	for i in vertex:
+		v[i[0]]=i[1]
+	attr=_udf_.get("self"+".color[]")
+	if len(attr)==0:
+		draw_BEM_model_concolor(_udf_,[0.0,0.0,0.0],[0,0,0,1],v,face,[1.0,0.0,0.0,1.0])
+	elif len(attr)==1:
+		draw_BEM_model_concolor(_udf_,[0.0,0.0,0.0],[0,0,0,1],v,face,attr[0])
+	else:
+		if len(face)!=len(attr):
+			print("Numbers of face[] and color[] are different!")
+		else:
+			draw_BEM_model_each_color(_udf_,[0.0,0.0,0.0],[0,0,0,1],v,face,attr)
+\end
+
+action particle_type[]:printCenterOfMobility(): \begin
+from MUtility5 import *
+index=Location("self").getIndex()[0]
+A,B,C=getSubTensorA(_udf_,index),getSubTensorB(_udf_,index),getSubTensorC(_udf_,index)
+a,b,c=convertABCToabc(A,B,C)
+print("Center of Mobility:\n",calcCenterOfMobility(b,c))
+\end
+
+action particle_type[]:printTensor(kind="resistance|mobility",average="false|true",center_position="center_of_resistance|center_of_mobility|arbitrary_position",arbitrary_pos="[0,0,0]") : \begin
+from MUtility5 import *
+index=Location("self").getIndex()[0]
+pos=center_position
+if pos=="center_of_resistance":
+	translate=[0.0,0.0,0.0]
+elif pos=="center_of_mobility":
+	A,B,C=getSubTensorA(_udf_,index),getSubTensorB(_udf_,index),getSubTensorC(_udf_,index)
+	a,b,c=convertABCToabc(A,B,C)
+	m=calcCenterOfMobility(b,c)
+	translate=m
+else:
+	translate=eval(arbitrary_pos)
+#####case of resistance tensor#####
+if kind=="resistance":
+	A,B,C,G,H,K=getResistanceTensor(_udf_,index)
+	A,B,C,G,H,K=translationResistanceTensor((A,B,C,G,H,K),translate)
+	if average=="false":
+		print("Resistance Tensor:")
+		print("A:\n",A,"\n","B:\n",B,"\n","C:\n",C)
+		print("G:\n",G,"\n","H:\n",H,"\n","K:\n",K)
+
+	elif average=="true":
+		print("Resistance Tensor Average:")
+		print("<A>:\n",averageForDirection3x3(A))
+		print("<B>:\n",averageForDirection3x3(B))
+		print("<C>:\n",averageForDirection3x3(C))
+		print("<G>:\n",averageForDirection3x3x3(G))
+		print("<H>:\n",averageForDirection3x3x3(H))
+		print("<K>:\n",averageForDirection3x3x3x3(K))
+
+#####case of mobility tensor#####
+elif kind=="mobility":
+	Z=getResistanceTensor(_udf_,index)
+	z=convertResistanceToMobilityTensor(Z)
+	a,b,c,g,h,k=translationMobilityTensor(z,translate)
+	if average=="false":
+		print("Mobility Tensor:")
+		print("a:\n",a,"\n","b:\n",b,"\n","c:\n",c)
+		print("g:\n",g,"\n","h:\n",h,"\n","k:\n",k)
+	elif average=="true":
+		print("Mobility Tensor Average:")
+		print("<a>:\n",averageForDirection3x3(a))
+		print("<b>:\n",averageForDirection3x3(b))
+		print("<c>:\n",averageForDirection3x3(c))
+		print("<g>:\n",averageForDirection3x3x3(g))
+		print("<h>:\n",averageForDirection3x3x3(h))
+		print("<k>:\n",averageForDirection3x3x3x3(k))
+\end
+
+
+action simulation.particle[]:show() : \begin
+from MShow5 import *
+from MUtility5 import *
+smin=$simulation.system_size.min
+size=$simulation.system_size.size
+draw_frame(_udf_,smin,[smin[0]+size[0],smin[1]+size[1],smin[2]+size[2]],[0,0,0,1])
+type=$simulation.particle[].particle_type
+pos=$simulation.particle[].initial_position
+angle=$simulation.particle[].initial_quaternion
+for i in range(len(angle)):
+	x=angle[i]
+	if x[0]*x[0]+x[1]*x[1]+x[2]*x[2]+x[3]*x[3]<0.1:
+		angle[i]=[0,0,0,1]
+n=len(type)
+for i in range(n):
+	loc=getLocation("ParticleType",type[i])
+	index=Location(loc).getIndex()[0]
+	A,B,C=getSubTensorA(_udf_,index),getSubTensorB(_udf_,index),getSubTensorC(_udf_,index)
+	a,b,c=convertABCToabc(A,B,C)
+	m=calcCenterOfMobility(b,c)
+	model=get(loc+".model.model_type")
+	################# SUPERPOSITION ################
+	if model=="superposition":
+		element=_udf_.get(loc+".model.superposition.element[]")
+		for t in range(len(element)):
+			element[t][0]=[element[t][0][0]+m[0],element[t][0][1]+m[1],element[t][0][2]+m[2]]
+		color=_udf_.get(loc+".color[]")
+		draw_superposition_model(_udf_,pos[i],angle[i],element,color)
+	############# BEADS ##########################
+	elif model=="beads":
+		bead=_udf_.get(loc+".model.beads.bead[].position")
+		k=len(bead)
+		for l in range(k):
+			bead[l]=[bead[l][0]+m[0],bead[l][1]+m[1],bead[l][2]+m[2]]
+		attr=_udf_.get(loc+".color[]")
+		if len(attr)==0:
+			draw_beads_model_concolor(_udf_,pos[i],angle[i],bead,[1.0,0.0,0.0,1.0])
+		elif len(attr)==1:
+			draw_beads_model_concolor(_udf_,pos[i],angle[i],bead,attr[0])
+		else:
+			if len(bead)!=len(attr):
+				print("Numbers of bead[] and color[] are different!")
+			else:
+				draw_beads_model_color(_udf_,pos[i],angle[i],bead.attr)
+	################ BEM #########################
+	elif model=="BEM":
+		vertex=_udf_.get(loc+".model.BEM.vertex[]")
+		face=_udf_.get(loc+".model.BEM.face[].vertex[]")
+		v={}
+		for t in vertex:
+			v[t[0]]=[t[1][0]+m[0],t[1][1]+m[1],t[1][2]+m[2]]
+		attr=_udf_.get(loc+".color[]")
+		if len(attr)==0:
+			draw_BEM_model_concolor(_udf_,pos[i],angle[i],v,face,[1.0,0.0,0.0,1.0])
+		elif len(attr)==1:
+			draw_BEM_model_concolor(_udf_,pos[i],angle[i],v,face,attr[0])
+		else:
+			if len(face)!=len(attr):
+				print("Numbers of face[] and color[] are different!")
+			else:
+				draw_BEM_model_color(_udf_,pos[i],[0,0,0,1],v,face,attr)
+\end
+
+action simulation.particle[]:setRandomPosition() : \begin
+from random import random
+min,max=$simulation.system_size.min,$simulation.system_size.size
+max=[min[0]+max[0],min[1]+max[1],min[2]+max[2]]
+size=[max[0]-min[0],max[1]-min[1],max[2]-min[2]]
+for i in range(size("simulation.particle[]")):
+	pos=[min[0]+size[0]*random(),min[1]+size[1]*random(),min[2]+size[2]*random()]
+	_udf_.put(pos[0],"simulation.particle[].initial_position.x",[i])
+	_udf_.put(pos[1],"simulation.particle[].initial_position.y",[i])
+	_udf_.put(pos[2],"simulation.particle[].initial_position.z",[i])
+\end
+
+action simulation.particle[]:setRandomAngle():\begin
+from Quaternion import *
+from random import random
+for i in range(size("simulation.particle[]")):
+	angle=eulerToFour([2.0*pi*random(),acos(1.0-2.0*random()),2.0*pi*random()])
+	_udf_.put(angle[0],"simulation.particle[].initial_quaternion.xi",[i])
+	_udf_.put(angle[1],"simulation.particle[].initial_quaternion.eta",[i])
+	_udf_.put(angle[2],"simulation.particle[].initial_quaternion.zeta",[i])
+	_udf_.put(angle[3],"simulation.particle[].initial_quaternion.chi",[i])
+\end
+
+action simulation.particle[]:particles_delete():\begin
+$simulation.particle[]=[]
+\end
+
+action simulation.particle[]:particles_insert(Size=1,Particle_Type_No=0):\begin
+begin_n=size("simulation.particle[]")
+particle_id=begin_n-1
+for i in range(begin_n,begin_n+Size):
+	while 1:
+		particle_id+=1
+		if getLocation("Particle",particle_id)==None:
+			$simulation.particle[i].id=particle_id
+			break
+	$simulation.particle[i].particle_type=Particle_Type_No
+	$simulation.particle[i].initial_position=[0.0,0.0,0.0]
+	$simulation.particle[i].initial_quaternion=[0.0,0.0,0.0,1.0]
+\end
+
+action simulation.particle[].initial_quaternion:inputEulerAngleToQuaternion(psi=0,theta=0,phi=0): \begin
+from Quaternion import *
+$self=eulerToFour((psi,theta,phi))
+\end
+
+action simulation_result.particle[]:show(kind="Standard|Center|FixedFrame|TrajectoryOfParticleFixedVector|Dice",particleRange="[]",translate="True|False",boundary="off|on",fixedVector="[0,0,1]"): \begin
+#clearDraw()
+#appendDraw()
+from MShow5 import *
+from MUtility5 import *
+from math import *
+if len(eval(particleRange))==0:
+	type=$simulation.particle[].particle_type
+	pos=$simulation_result.particle[].position
+	angle=$simulation_result.particle[].quaternion
+else:
+	type,pos,angle=[],[],[]
+	for i in eval(particleRange):
+		type.append($simulation.particle[i].particle_type)
+		pos.append($simulation_result.particle[i].position)
+		angle.append($simulation_result.particle[i].quaternion)
+if boundary=="on":
+	min,max=$simulation.system_size.min,$simulation.system_size.size
+	max=[min[0]+max[0],min[1]+max[1],min[2]+max[2]]
+	draw_frame(_udf_,min,max,[0,0,0,1])
+	size=[max[0]-min[0],max[1]-min[1],max[2]-min[2]]
+	for i in range(len(pos)):
+		pos[i][0]=pos[i][0]-floor((pos[i][0]-min[0])/size[0])*size[0]
+		pos[i][1]=pos[i][1]-floor((pos[i][1]-min[1])/size[1])*size[1]
+		pos[i][2]=pos[i][2]-floor((pos[i][2]-min[2])/size[2])*size[2]
+n=len(type)
+if translate=="False":
+	pos=[[0,0,0]]*n
+if kind=="Standard":
+	for i in range(n):
+		loc=getLocation("ParticleType",type[i])
+		index=Location(loc).getIndex()[0]
+		A,B,C=getSubTensorA(_udf_,index),getSubTensorB(_udf_,index),getSubTensorC(_udf_,index)
+		a,b,c=convertABCToabc(A,B,C)
+		m=calcCenterOfMobility(b,c)
+		model=get(loc+".model.model_type")
+		################# SUPERPOSITION ################
+		if model=="superposition":
+			element=_udf_.get(loc+".model.superposition.element[]")
+			for t in range(len(element)):
+				element[t][0]=[element[t][0][0]+m[0],element[t][0][1]+m[1],element[t][0][2]+m[2]]
+			color=_udf_.get(loc+".color[]")
+			draw_superposition_model(_udf_,pos[i],angle[i],element,color)
+		############# BEADS ##########################
+		elif model=="beads":
+			bead=_udf_.get(loc+".model.beads.bead[].position")
+			radius=_udf_.get(loc+".model.beads.bead[].radius")
+			k=len(bead)
+			for l in range(k):
+				bead[l]=[bead[l][0]+m[0],bead[l][1]+m[1],bead[l][2]+m[2]]
+			attr=_udf_.get(loc+".color[]")
+			if len(attr)==0:
+				draw_beads_model_concolor(_udf_,pos[i],angle[i],bead,[1.0,0.0,0.0,1.0])
+			elif len(attr)==1:
+				draw_beads_model_concolor(_udf_,pos[i],angle[i],bead,attr[0])
+			else:
+				if len(bead)!=len(attr):
+					print("Numbers of bead[] and color[] are different!")
+				else:
+					draw_beads_model_color(_udf_,pos[i],angle[i],bead.attr)
+		################ BEM #########################
+		elif model=="BEM":
+			vertex=_udf_.get(loc+".model.BEM.vertex[]")
+			face=_udf_.get(loc+".model.BEM.face[].vertex[]")
+			v={}
+			for t in vertex:
+				v[t[0]]=[t[1][0]+m[0],t[1][1]+m[1],t[1][2]+m[2]]
+			attr=_udf_.get(loc+".color[]")
+			if len(attr)==0:
+				draw_BEM_model_concolor(_udf_,pos[i],angle[i],v,face,[1.0,0.0,0.0,1.0])
+			elif len(attr)==1:
+				draw_BEM_model_concolor(_udf_,pos[i],angle[i],v,face,attr[0])
+			else:
+				if len(face)!=len(attr):
+					print("Numbers of face[] and color[] are different!")
+				else:
+					draw_BEM_model_color(_udf_,pos[i],[0,0,0,1],v,face,attr)
+elif kind=="Center":
+	for i in pos:
+		point(i,1)
+elif kind=="FixedFrame":
+	for i in range(n):
+		x,y,z=x_vector(angle[i]),y_vector(angle[i]),z_vector(angle[i])
+		line(pos[i],[pos[i][0]+x[0],pos[i][1]+x[1],pos[i][2]+x[2]],[1,0,0,1])
+		line(pos[i],[pos[i][0]+y[0],pos[i][1]+y[1],pos[i][2]+y[2]],[0,1,0,1])
+		line(pos[i],[pos[i][0]+z[0],pos[i][1]+z[1],pos[i][2]+z[2]],[0,0,1,1])
+elif kind=="TrajectoryOfParticleFixedVector":
+	u0=eval(fixedVector)
+	for i in range(n):
+		u=rotate_(angle[i],u0)
+		r=pos[i][0]+u[0],pos[i][1]+u[1],pos[i][2]+u[2]
+		point(r,1)
+elif kind=="Dice":
+	for i in range(n):
+		drawDice(_udf_,angle[i],pos[i],1)
+\end
+
+action simulation_result.stress:plot(): \begin
+import gnuplot2
+sxx,syy,szz,syx,szx,szy=[],[],[],[],[],[]
+_udf_.jump(0)
+print ("stress:")
+print ("xx,\tyy,\tzz,\tyx.\tzx,\tzy")
+for i in range(_udf_.totalRecord()):
+	s=_udf_.get("simulation_result.stress")
+	print(s[0][0],s[1][1],s[2][2],s[1][0],s[2][0],s[2][1])
+	sxx.append(s[0][0])
+	syy.append(s[1][1])
+	szz.append(s[2][2])
+	syx.append(s[1][0])
+	szx.append(s[2][0])
+	szy.append(s[2][1])
+	_udf_.nextRecord()
+gnuplot2.plot( 'set title " stress (sigma-pI-2eta E)=-sum(S-RF-epsilon cdot T/2)/V" \
+  \n set key right \
+  \n set xlabel "step"  \
+  \n set ylabel "stress"' , \
+  [[sxx,"title 'sigma_xx' with linespoints"],
+   [syy,"title 'sigma_yy' with linespoints"],
+   [szz,"title 'sigma_zz' with linespoints"],
+   [syx,"title 'sigma_yx' with linespoints"],
+   [szx,"title 'sigma_zx' with linespoints"],
+   [szy,"title 'sigma_zy' with linespoints"]])
+\end
+
+action simulation_result.cpu_time:plot(): \begin
+import gnuplot2
+_udf_.jump(0)
+x=range(_udf_.totalRecord())
+t=[]
+for i in range(_udf_.totalRecord()):
+	t.append(_udf_.get("simulation_result.cpu_time"))
+	_udf_.nextRecord()
+gnuplot2.plot( 'set title " calculation_time[s]" \
+  \n set key right \
+  \n set xlabel "step"  \
+  \n set ylabel "calculation time"' , \
+  [
+   [t,"title 'time' with linespoints"]
+])
+\end
+
+action particle_type[].model.BEM:print_topological_properties() : \begin
+from MUtility import *
+face=$self.face[].vertex[]
+edge=get_edge(face)
+nv,ne,nf=size($self.vertex[]),len(edge),len(face)
+print("number of vertex (v):",nv)
+print("number of edge   (e):",ne)
+print("number of face   (f):",nf)
+print("Euler number (v-e+f):",nv-ne+nf)
+print("genus   (v-e+f=2-2g):",1-(nv-ne+nf)/2)
+\end

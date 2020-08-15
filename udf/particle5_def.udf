@@ -1,0 +1,265 @@
+\begin{header}
+\begin{def}
+	EngineType:string;
+	EngineVersion:string;
+	IOType:string;
+	ProjectName:string;
+	Comment:string;
+	Action:string;
+\end{def}
+\begin{data}
+EngineType:"particle"
+EngineVersion:"V5"
+IOType:"INOUT"
+ProjectName:""
+Comment:"UDF definition file for particle system"
+Action:"particle5.act;beads_input5.act;bem_input5.act;superposition_input5.act"
+\end{data}
+\end{header}
+
+\begin{unit}
+[l]= {$unit_parameter.length} [m]
+[eta] = {$unit_parameter.solvent_viscosity} [kg/m/s]
+[tau] = {$unit_parameter.time} [s]
+[epsilon] = {$unit_parameter.permittivity} [s^4*A^2/m^3/kg]
+[q] = ({$unit_parameter.solvent_viscosity}*{$unit_parameter.permittivity}*{$unit_parameter.time}^(-1))^(1/2)*{$unit_parameter.length}^2 [s*A]
+\end{unit}
+
+\begin{def}
+class Vector3d:{x:double [unit],y:double [unit],z:double[unit]}[unit]
+class Quaternion:{xi:double,eta:double,zeta:double,chi:double}
+class Tensor3x3:{
+	x:Vector3d [unit],y:Vector3d [unit],z:Vector3d [unit]
+}[unit]
+class SymmetricTensor3x3:{
+	xx:double[unit],yy:double[unit],zz:double[unit]
+	yx:double[unit],zx:double[unit],zy:double[unit]
+}[unit]
+class SubTensor3x3:{
+	xx:double[unit],yy:double[unit],zz:double[unit]
+	yx:double[unit],zx:double[unit],zy:double[unit]
+}[unit]
+class SubTensor3x3x3:{
+	xx:Vector3d[unit]
+	yy:Vector3d[unit]
+	zz:Vector3d[unit]
+	yx:Vector3d[unit]
+	zx:Vector3d[unit]
+	zy:Vector3d[unit]
+}[unit]
+class SubTensor3x3x3x3:{
+	xx:{xx:double [unit]} 
+	yy:{xx:double [unit],yy:double [unit]}
+	zz:{xx:double [unit],yy:double [unit],zz:double [unit]}
+	yx:{xx:double [unit],yy:double [unit]
+		  zz:double [unit],yx:double [unit]}
+	zx:{xx:double [unit],yy:double [unit],zz:double [unit]
+		  yx:double [unit],zx:double [unit]}
+	zy:{xx:double [unit],yy:double [unit],zz:double [unit]
+		  yx:double [unit],zx:double [unit],zy:double [unit]}
+}[unit]
+class Vertex:{
+	id:ID
+	position:Vector3d[l]
+}
+class Face:{
+	id:ID
+	vertex[]:<Vertex,ID>
+}
+
+class ParticleType:{
+	id:ID
+	model:{
+		model_type:select{"beads","BEM","superposition"}
+		beads:{
+			bead[]:{
+				radius:double[l]
+				position:Vector3d[l]
+			}
+		}
+		BEM:{
+			Gauss_Legendre_integral_points_number:select{"1","3","4","7"}
+			vertex[]:Vertex
+			face[]:Face
+		}
+		superposition:{
+			element[]:{
+				position:Vector3d[l] "relative position from center of particle"
+				element:select{"sphere","prolate_spheroid","oblate_spheroid","disk","needle","point","line"}"Point and Line not having hydrodynamic effect"
+				sphere:{
+					radius:double[l]
+				}
+				prolate_spheroid:{
+					director:Vector3d "unit vector"
+					long_axis:double[l]
+					short_axis:double[l]
+				}
+				oblate_spheroid:{
+					director:Vector3d "unit vector"
+					long_axis:double[l]
+					short_axis:double[l]
+				}
+				disk:{
+					director:Vector3d "unit vector of perpendicular to disk's surface"
+					radius:double[l]
+				}
+				needle:{
+					director:Vector3d "unit vector of axis"
+					long_axis:double[l]
+					short_axis:double[l]
+				}
+				line:{
+					director:Vector3d "unit vector"
+					half_length:double[l] "half length of total line's length"
+				}"doesn't have hydrodynamic effect"
+			}
+		}
+	}
+	//solver:{
+	//	type:select{"lu","bicgstab"}
+	//	bicgstab:{
+	//		max_iteration:int
+	//		tolerance:double
+	//	}
+	//}
+	color[]:{red:double,green:double,blue:double,trans:double}
+	tensor_diagonalization:select{"false","a","b","c","A","B","C"}
+	resistance_tensor:{
+		A:SubTensor3x3 [eta*l] "coupling tensor between force and velocity"
+		B:SubTensor3x3 [eta*l^2] "coupling tensor between force and angular velocity"
+		C:SubTensor3x3 [eta*l^3] "coupling tensor between torque and angular velocity"
+		G:SubTensor3x3x3 [eta*l^2]"coupling tensor between force and rate of strain"
+		H:SubTensor3x3x3 [eta*l^3] "coupling tensor between torque and rate of strain"
+		K:SubTensor3x3x3x3 [eta*l^3]"coupling tensor between stresslet and rate of strain"
+	}
+	dipole:Vector3d[q*l]
+	susceptibility:SymmetricTensor3x3
+	analysis_information:{
+		convert_tensor:Tensor3x3
+		shift_vector:Vector3d[l]
+		cpu_time:double[s]
+	}
+	additional_information[]:{
+		item:string
+		value:string
+	}
+}
+
+class Particle:{
+	id:ID
+	particle_type:<ParticleType,ID>
+	initial_position:Vector3d[l]
+	initial_quaternion:Quaternion
+}
+\end{def}
+
+\begin{global_def}
+unit_parameter: {
+	length: double [m] 
+	solvent_viscosity: double [kg/m/s]
+	time: double [s] "time unit"
+	permittivity:double [s^4*A^2/m^3/kg] "unit [epsilon]"
+}
+fluid:{
+	viscosity:double[eta]
+}
+particle_type[]:ParticleType
+simulation:{
+	time:{
+		simulation_steps:int
+		report_steps:int
+		dt:double[tau]
+	}
+	system_size:{
+		min:Vector3d[l]
+		size:Vector3d[l]
+	}
+	integrator:select{"4th_order_Runge_Kutta","Euler"}
+	particle[]:Particle
+	external_field:{
+		velocity_field:{
+			velocity_field_type:select{"false","simple_shear_flow","dynamic_shear_flow","elongational_flow","linear_flow",
+				"plane_Poiseuille_flow","cylinder_Poiseuille_flow",
+				"static_udf_flow2d","static_udf_flow3d","dynamic_udf_flow2d","dynamic_udf_flow3d"}
+			simple_shear_flow:{
+				shear_rate:double[1/tau]
+			}
+			dynamic_shear_flow:{
+				strain:double
+				angular_frequency:double[1/tau]
+			}
+			elongational_flow:{
+				strain_rate:double[1/tau]
+				k:double
+			}"k=0,strain_rate>0 one axial;k=0,strain_rate<0 two axial;k=1,planar"
+			linear_flow:{
+				A:Vector3d[l/tau]
+				B:Tensor3x3[1/tau]
+			}"v(r)=A + B dot r"
+			plane_Poiseuille_flow:{
+				half_length_between_plates:double[l]
+				max_speed:double[l/tau]
+			}
+			cylinder_Poiseuille_flow:{
+				radius:double[l]
+				max_speed:double[l/tau]
+			}
+			static_udf_flow2d:{file_name:string}
+			static_udf_flow3d:{file_name:string}
+			dynamic_udf_flow2d:{file_name:string}
+			dynamic_udf_flow3d:{file_name:string}
+		}
+		electric_field:{
+			field_type:select{"false","constant_field",
+			                  "elliptic_rotation_field","sawtooth_field"}
+			constant_field:{
+				E:Vector3d[(eta/tau/epsilon)^(1/2)]
+			}
+			elliptic_rotation_field:{
+				angular_velocity1:double[1/tau]
+				E1:Vector3d[(eta/tau/epsilon)^(1/2)]
+				angular_velocity2:double[1/tau]
+				E2:Vector3d[(eta/tau/epsilon)^(1/2)]
+			}
+			sawtooth_field:{
+				umax:double[eta*l^3/tau]
+				alpha:double
+				length:double[l]
+				swith_time:double[tau]
+			}
+		}
+	}
+	external_force[]:{
+		coordination_system:select{"laboratory_system","particle_system"}
+		particle_type[]:<ParticleType,ID>
+		force:Vector3d[eta*l^2/tau]
+		torque:Vector3d[eta*l^3/tau]
+		acting_point:Vector3d[l] "particle fixed frame.origin is the center of mobility"
+	}
+	Brownian_motion:{
+		Brownian_flag:select{"false","true"}
+		true:{kBT:double[eta*l^3/tau]}
+	}
+	additional_information[]:{
+		item:string
+		value:string
+	}
+}
+\end{global_def}
+\begin{def}
+simulation_result:{
+	particle[]:{
+		position:Vector3d[l] "center of mobility"
+		quaternion:Quaternion
+		velocity:Vector3d[l/tau]
+		angular_velocity:Vector3d[1/tau]
+	}
+	stress:Tensor3x3[eta/tau]
+	cpu_time:double [s]
+	additional_information[]:{
+		item:string
+		value:string
+	}
+}
+\end{def}
+

@@ -1,0 +1,105 @@
+\begin{header}
+\begin{def}
+	EngineType:string;
+	EngineVersion:string;
+	IOType:string;
+	ProjectName:string;
+	Comment:string;
+	Action:string;
+\end{def}
+\begin{data}
+EngineType:"orientation"
+EngineVersion:"V5"
+IOType:"INOUT"
+ProjectName:""
+Comment:"UDF definition file for particle orientation"
+Action:"orientation5.act"
+\end{data}
+\end{header}
+
+\begin{unit}
+[l]= {$unit_parameter.length} [m]
+[eta] = {$unit_parameter.solvent_viscosity} [kg/m/s]
+[tau] = {$unit_parameter.time} [s]
+\end{unit}
+
+\begin{def}
+class Vector3d:{x:double [unit],y:double [unit],z:double[unit]}[unit]
+class Tensor3x3:{
+	x:Vector3d [unit],y:Vector3d [unit],z:Vector3d [unit]
+}[unit]
+class SymmetricTensor3x3:{
+	xx:double[unit],yy:double[unit],zz:double[unit]
+	yx:double[unit],zx:double[unit],zy:double[unit]
+}[unit]
+
+\end{def}
+
+\begin{global_def}
+unit_parameter: {
+	length: double [m] 
+	solvent_viscosity: double [kg/m/s]
+	time: double [s] "time unit"
+}
+simulation:{
+	time:{
+		simulation_steps:int
+		report_steps:int
+		dt:double[tau]
+	}
+	integrator:select{"4th_order_Runge_Kutta","Euler"}
+	particle:{
+		udf_file:string
+		particle_type_id:int
+	}
+	number_density:double[1/l^3]
+	initial_order_parameter:{
+		Q11:SymmetricTensor3x3
+		Q22:SymmetricTensor3x3
+		Q33:SymmetricTensor3x3
+		Q21:SymmetricTensor3x3
+		Q31:SymmetricTensor3x3
+		Q32:SymmetricTensor3x3
+	}
+	velocity_field:{
+		velocity_field_type:select{"false","simple_shear_flow","dynamic_shear_flow","elongational_flow"}
+		simple_shear_flow:{
+			shear_rate:double[1/tau]
+		}
+		dynamic_shear_flow:{
+			strain:double
+			angular_frequency:double[1/tau]
+		}
+		elongational_flow:{
+			strain_rate:double[1/tau]
+			k:double
+		}"k=0,strain_rate>0 one axial;k=0,strain_rate<0 two axial;k=1,planar"
+	}
+	kBT:double[eta*l^3/tau]
+	fourth_order_approximation:select{"equilibrium","linear","quadratic"}
+	additional_information[]:{
+		item:string
+		value:string
+	}
+}
+\end{global_def}
+\begin{def}
+simulation_result:{
+	time:double[tau]
+	order_parameter:{
+		Q11:SymmetricTensor3x3
+		Q22:SymmetricTensor3x3
+		Q33:SymmetricTensor3x3
+		Q21:SymmetricTensor3x3
+		Q31:SymmetricTensor3x3
+		Q32:SymmetricTensor3x3
+	}
+	stress:SymmetricTensor3x3[eta/tau]
+	cpu_time:double [s]
+	additional_information[]:{
+		item:string
+		value:string
+	}
+}
+\end{def}
+

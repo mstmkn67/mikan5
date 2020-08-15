@@ -1,0 +1,71 @@
+#####Beads model#####
+action particle_type[]:input_beads_rect(x=10,y=10,z=10): \begin
+import MBead5
+$self.model.model_type="beads"
+$self.model.beads.bead[]=[]
+pos=MBead5.rect(x,y,z)
+for i in range(len(pos)):
+	$self.model.beads.bead[i].radius=1.0
+	$self.model.beads.bead[i].position=pos[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","rect"]
+$self.additional_information[1]=["X","%f"%(x)]
+$self.additional_information[2]=["Y","%f"%(y)]
+$self.additional_information[3]=["Z","%f"%(z)]
+\end
+
+action particle_type[]:input_beads_helix(rradius=3,pitch=3,number=100,chirality=1): \begin
+import MBead5
+$self.model.model_type="beads"
+$self.model.beads.bead[]=[]
+pos=MBead5.helix(rradius,pitch,number,chirality)
+for i in range(len(pos)):
+	$self.model.beads.bead[i].radius=1.0
+	$self.model.beads.bead[i].position=pos[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","helix"]
+$self.additional_information[1]=["Radius","%f"%(rradius)]
+$self.additional_information[2]=["Pitch","%f"%(pitch)]
+$self.additional_information[3]=["Nnumber","%d"%(number)]
+$self.additional_information[4]=["Chirality","%d"%(chirality)]
+\end
+
+action particle_type[]:input_beads_sphere(rradius=15): \begin
+import MBead5
+$self.model.model_type="beads"
+$self.model.beads.bead[]=[]
+pos=MBead5.sphere(rradius)
+for i in range(len(pos)):
+	$self.model.beads.bead[i].radius=1.0
+	$self.model.beads.bead[i].position=pos[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","sphere"]
+$self.additional_information[1]=["Radius","%f"%(rradius)]
+\end
+
+action particle_type[]:input_beads_cylinder(length=20,rradius=5): \begin
+import MBead5
+$self.model.model_type="beads"
+$self.model.beads.bead[]=[]
+pos=MBead5.cylinder(length,rradius)
+for i in range(len(pos)):
+	$self.model.beads.bead[i].radius=1.0
+	$self.model.beads.bead[i].position=pos[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","cylinder"]
+$self.additional_information[1]=["Length","%f"%(length)]
+$self.additional_information[2]=["Radius","%f"%(rradius)]
+\end
+
+action particle_type[]:input_beads_disk(rradius=5): \begin
+import MBead5
+$self.model.model_type="beads"
+$self.model.beads.bead[]=[]
+pos=MBead5.disk(rradius)
+for i in range(len(pos)):
+	$self.model.beads.bead[i].radius=1.0
+	$self.model.beads.bead[i].position=pos[i]
+$self.additional_information[]=[]
+$self.additional_information[0]=["Name","disk"]
+$self.additional_information[1]=["Radius","%f"%(rradius)]
+\end

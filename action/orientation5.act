@@ -1,0 +1,75 @@
+
+action simulation_result.order_parameter:plot(component="Q11|Q22|Q33|Q21|Q31|Q32"): \begin
+import gnuplot2
+Qxx,Qyy,Qzz,Qyx,Qzx,Qzy=[],[],[],[],[],[]
+_udf_.jump(0)
+print ("order paramete r"+ component+" :")
+upath="simulation_result.order_parameter."+component
+print ("xx,\tyy,\tzz,\tyx.\tzx,\tzy")
+for i in range(_udf_.totalRecord()):
+	Q=_udf_.get(upath)
+	print(Q[0],Q[1],Q[2],Q[3],Q[4],Q[5])
+	Qxx.append(Q[0])
+	Qyy.append(Q[1])
+	Qzz.append(Q[2])
+	Qyx.append(Q[3])
+	Qzx.append(Q[4])
+	Qzy.append(Q[5])
+	_udf_.nextRecord()
+gnuplot2.plot( 'set title " order parameter " \
+  \n set key right \
+  \n set xlabel "step"  \
+  \n set ylabel "order parameter"' , \
+  [[Qxx,"title 'xx' with linespoints"],
+   [Qyy,"title 'yy' with linespoints"],
+   [Qzz,"title 'zz' with linespoints"],
+   [Qyx,"title 'yx' with linespoints"],
+   [Qzx,"title 'zx' with linespoints"],
+   [Qzy,"title 'zy' with linespoints"]])
+\end
+
+action simulation_result.stress:plot(): \begin
+import gnuplot2
+sxx,syy,szz,syx,szx,szy=[],[],[],[],[],[]
+_udf_.jump(0)
+print ("stress:")
+print ("xx,\tyy,\tzz,\tyx.\tzx,\tzy")
+for i in range(_udf_.totalRecord()):
+	s=_udf_.get("simulation_result.stress")
+	print(s[0],s[1],s[2],s[3],s[4],s[5])
+	sxx.append(s[0])
+	syy.append(s[1])
+	szz.append(s[2])
+	syx.append(s[3])
+	szx.append(s[4])
+	szy.append(s[5])
+	_udf_.nextRecord()
+gnuplot2.plot( 'set title " stress " \
+  \n set key right \
+  \n set xlabel "step"  \
+  \n set ylabel "stress"' , \
+  [[sxx,"title 'sigma_xx' with linespoints"],
+   [syy,"title 'sigma_yy' with linespoints"],
+   [szz,"title 'sigma_zz' with linespoints"],
+   [syx,"title 'sigma_yx' with linespoints"],
+   [szx,"title 'sigma_zx' with linespoints"],
+   [szy,"title 'sigma_zy' with linespoints"]])
+\end
+
+action simulation_result.cpu_time:plot(): \begin
+import gnuplot2
+_udf_.jump(0)
+x=range(_udf_.totalRecord())
+t=[]
+for i in range(_udf_.totalRecord()):
+	t.append(_udf_.get("simulation_result.cpu_time"))
+	_udf_.nextRecord()
+gnuplot2.plot( 'set title " calculation_time[s]" \
+  \n set key right \
+  \n set xlabel "step"  \
+  \n set ylabel "calculation time"' , \
+  [
+   [t,"title 'time' with linespoints"]
+])
+\end
+
