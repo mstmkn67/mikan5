@@ -5,7 +5,7 @@ The system works on GORUMET, which is GUI of OCTA [OCTA](http://octa.jp/).
 Setup the director in the menu of GOURMET,
 Tool>Environments Setup
 
-The samples haven't upload yet.
+The samples haven't uploaded yet.
 
 ------------
 
