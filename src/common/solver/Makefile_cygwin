@@ -1,0 +1,16 @@
+CC = g++  -mno-cygwin -DMINGW
+CFLAG = -c -O3
+CCFLAG = -lm -llapack -lg2c -L/usr/lib/gcc-lib/i686-pc-cygwin/3.3.3
+OBJECTS=checkLapack.o LapackFunctions.o
+
+all : $(OBJECTS)
+	$(CC) -o checkLapack.exe  $(OBJECTS)  $(CCFLAG)
+
+checkLapack.o : checkLapack.cpp 
+	$(CC) checkLapack.cpp $(CFLAG)
+
+LapackFunctions.o : LapackFunctions.cpp LapackFunctions.h
+	$(CC) LapackFunctions.cpp $(CFLAG)
+
+clean : 
+	rm *.o checkLapack.exe
