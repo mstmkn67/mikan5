@@ -1,8 +1,8 @@
 # mikan5
 
-MIKAN5 simulates arbitrary shaped particles dispersed in Newtonian Stokes Fluid (Reynolds number is zero).
-The system works on GORUMET, which is GUI of OCTA [OCTA](http://octa.jp/).
-Setup the director in the menu of GOURMET,
+MIKAN5 simulates arbitrary shaped particles dispersed in Newtonian Stokes Fluid.
+The system works on GORUMET, which is GUI of  [OCTA](http://octa.jp/).
+Set the directory in the menu of GOURMET,
 Tool>Environments Setup
 
 The samples haven't uploaded yet.
